@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#f0f4f8">
+    <title>Дневник симптомов</title>
+
+    <link rel="manifest" href="data:application/manifest+json,
+    {
+        %22name%22: %22Дневник симптомов%22,
+        %22short_name%22: %22Симптомы%22,
+        %22start_url%22: %22.%22,
+        %22display%22: %22standalone%22,
+        %22background_color%22: %22#f0f4f8%22,
+        %22theme_color%22: %22#f0f4f8%22,
+        %22icons%22: [{
+            %22src%22: %22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232563eb'/><text x='50' y='68' font-size='55' text-anchor='middle' fill='white'>+</text></svg>%22,
+            %22sizes%22: %22any%22,
+            %22type%22: %22image/svg+xml%22
+        }]
+    }">
+
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --primary: #2563eb;
+            --primary-light: #eff4ff;
+            --danger: #e65050;
+            --danger-light: #fef2f2;
+            --warning: #e5980b;
+            --warning-light: #fffbeb;
+            --success: #10b981;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 12px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            max-width: 430px;
+            margin: 0 auto;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            padding: 0 14px;
+            padding-top: calc(10px + var(--safe-top));
+            padding-bottom: calc(20px + var(--safe-bottom));
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        /* Шапка */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 0 2px;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .header .date-badge {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--card);
+            padding: 5px 10px;
+            border-radius: 16px;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+
+        /* Табы */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 3px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: calc(6px + var(--safe-top));
+            z-index: 10;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 9px 0;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            letter-spacing: -0.1px;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .panel {
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+        .panel.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Силуэт */
+        .silhouette-container {
+            display: flex;
+            justify-content: center;
+            margin: 0 0 8px;
+        }
+        svg {
+            width: 150px;
+            height: auto;
+        }
+        .zone {
+            fill: #e8ecf1;
+            stroke: #c8cdd5;
+            stroke-width: 1.8;
+            transition: all 0.15s;
+            cursor: pointer;
+        }
+        .zone.active {
+            fill: var(--danger);
+            stroke: #c53030;
+        }
+
+        .section-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 10px 0 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 4px;
+        }
+        .btn {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .intensity-row {
+            display: flex;
+            gap: 3px;
+        }
+        .int-btn {
+            flex: 1;
+            padding: 10px 0;
+            text-align: center;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .int-btn:active {
+            transform: scale(0.94);
+        }
+        .int-btn.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        .int-btn.high-light {
+            border-color: #fecaca;
+            background: #fff5f5;
+            color: var(--danger);
+        }
+        .int-btn.high-light.selected {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #fff;
+        }
+
+        .note-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 13px;
+            margin-top: 6px;
+            resize: none;
+            height: 38px;
+            font-family: inherit;
+        }
+        .note-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 13px;
+            margin-top: 10px;
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            border-radius: 22px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: -0.2px;
+            transition: all 0.15s;
+        }
+        .save-btn:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+        .saved-msg {
+            text-align: center;
+            color: var(--success);
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .saved-msg.show {
+            opacity: 1;
+        }
+
+        /* История */
+        .history-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.1s;
+            box-shadow: var(--shadow);
+        }
+        .history-item:active {
+            background: #f8fafc;
+        }
+        .history-item .left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+        .history-item .zone-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .history-item .type-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .history-item .date-name {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .history-item .right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .intensity-badge {
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .intensity-badge.high {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+        .intensity-badge.mid {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+        .intensity-badge.low {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            transition: all 0.1s;
+            flex-shrink: 0;
+        }
+        .delete-btn:active {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+        .empty-history {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            padding: 30px 16px;
+            line-height: 1.5;
+        }
+        .context-indicator {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            margin-left: 3px;
+            vertical-align: middle;
+        }
+
+        /* Отчёт */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 14px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .report-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .report-row input {
+            flex: 1;
+            padding: 9px 6px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 11px;
+            font-family: inherit;
+            min-width: 0;
+        }
+        .report-row span {
+            color: var(--text-muted);
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .report-btn {
+            padding: 9px 14px;
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            border-radius: 18px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .report-output {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            font-size: 11px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-height: 45vh;
+            overflow-y: auto;
+            color: var(--text);
+            font-family: 'SF Mono', 'Menlo', monospace;
+        }
+        .copy-btn {
+            width: 100%;
+            padding: 11px;
+            margin-top: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .copy-btn:active {
+            background: var(--primary-light);
+        }
+
+        /* Модалка */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            z-index: 100;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal {
+            background: var(--card);
+            border-radius: 20px 20px 0 0;
+            padding: 20px 16px;
+            padding-bottom: calc(24px + var(--safe-bottom));
+            width: 100%;
+            max-width: 430px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+        .modal h3 {
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .modal .field {
+            margin-bottom: 10px;
+        }
+        .modal label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .modal .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+        }
+        .modal .btn-save-context {
+            flex: 1;
+            padding: 12px;
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .modal .btn-close-modal {
+            flex: 1;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🩺 Дневник симптомов</h1>
+        <div class="date-badge" id="today-date"></div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" data-panel="panel-input">Ввод</div>
+        <div class="tab" data-panel="panel-history">История</div>
+        <div class="tab" data-panel="panel-report">Отчёт</div>
+    </div>
+
+    <!-- Ввод -->
+    <div class="panel active" id="panel-input">
+        <div class="silhouette-container">
+            <svg viewBox="0 0 200 400">
+                <circle cx="100" cy="35" r="26" class="zone" data-zone="Голова" />
+                <rect x="89" y="58" width="22" height="18" rx="4" class="zone" data-zone="Шея" />
+                <rect x="67" y="74" width="66" height="75" rx="10" class="zone" data-zone="Грудь" />
+                <rect x="70" y="148" width="60" height="38" rx="7" class="zone" data-zone="Живот верх" />
+                <rect x="70" y="184" width="60" height="28" rx="7" class="zone" data-zone="Живот низ" />
+                <rect x="17" y="82" width="20" height="50" rx="7" class="zone" data-zone="Левое плечо" />
+                <rect x="19" y="130" width="18" height="46" rx="6" class="zone" data-zone="Левое предплечье" />
+                <rect x="163" y="82" width="20" height="50" rx="7" class="zone" data-zone="Правое плечо" />
+                <rect x="163" y="130" width="18" height="46" rx="6" class="zone" data-zone="Правое предплечье" />
+                <rect x="72" y="210" width="56" height="22" rx="4" class="zone" data-zone="Поясница" />
+                <rect x="56" y="230" width="28" height="55" rx="7" class="zone" data-zone="Левое бедро" />
+                <rect x="116" y="230" width="28" height="55" rx="7" class="zone" data-zone="Правое бедро" />
+                <rect x="58" y="283" width="24" height="50" rx="6" class="zone" data-zone="Левая голень" />
+                <rect x="118" y="283" width="24" height="50" rx="6" class="zone" data-zone="Правая голень" />
+            </svg>
+        </div>
+
+        <div class="section-title">Тип ощущения</div>
+        <div class="btn-row" id="type-buttons">
+            <div class="btn" data-type="Боль">Боль</div>
+            <div class="btn" data-type="Тошнота">Тошнота</div>
+            <div class="btn" data-type="Головокружение">Круж. гол.</div>
+            <div class="btn" data-type="Онемение">Онемение</div>
+            <div class="btn" data-type="Жжение">Жжение</div>
+            <div class="btn" data-type="Давление">Давление</div>
+            <div class="btn" data-type="Спазм">Спазм</div>
+            <div class="btn" data-type="Другое">Другое</div>
+        </div>
+
+        <div id="pain-char-row" style="display:none;">
+            <div class="section-title">Характер боли</div>
+            <div class="btn-row" id="pain-char-buttons">
+                <div class="btn" data-pain-char="Острая">Острая</div>
+                <div class="btn" data-pain-char="Тянущая">Тянущая</div>
+                <div class="btn" data-pain-char="Пульсир.">Пульсир.</div>
+                <div class="btn" data-pain-char="Тупая">Тупая</div>
+            </div>
+        </div>
+
+        <div class="section-title">Интенсивность</div>
+        <div class="intensity-row" id="intensity-buttons"></div>
+
+        <textarea class="note-input" placeholder="Заметка (еда, действие)" id="note"></textarea>
+        <button class="save-btn" id="save-btn">Зафиксировать</button>
+        <div class="saved-msg" id="saved-msg">✅ Записано</div>
+    </div>
+
+    <!-- История -->
+    <div class="panel" id="panel-history">
+        <div id="history-list"></div>
+    </div>
+
+    <!-- Отчёт -->
+    <div class="panel" id="panel-report">
+        <div class="card">
+            <div class="section-title" style="margin-top:0">Период</div>
+            <div class="report-row">
+                <input type="date" id="report-date-from">
+                <span>—</span>
+                <input type="date" id="report-date-to">
+                <button class="report-btn" id="generate-report">Показать</button>
+            </div>
+            <div class="report-output" id="report-output">Выберите период и нажмите «Показать».</div>
+            <button class="copy-btn" id="copy-report">📋 Скопировать</button>
+        </div>
+    </div>
+
+    <!-- Модалка -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <h3>📝 Детали</h3>
+            <div id="modal-content"></div>
+            <div class="btn-row">
+                <button class="btn-close-modal" id="btn-close-modal">Закрыть</button>
+                <button class="btn-save-context" id="btn-save-context">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedZone = null, selectedType = null, selectedPainChar = null, selectedIntensity = null, currentEditId = null;
+        document.getElementById('today-date').textContent = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+
+        // Кнопки интенсивности
+        const intRow = document.getElementById('intensity-buttons');
+        for (let i = 1; i <= 10; i++) {
+            const btn = document.createElement('div');
+            btn.className = 'int-btn' + (i >= 7 ? ' high-light' : '');
+            btn.dataset.intensity = i;
+            btn.textContent = i;
+            intRow.appendChild(btn);
+        }
+
+        // Табы
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.panel).classList.add('active');
+                if (tab.dataset.panel === 'panel-history') renderHistory();
+                if (tab.dataset.panel === 'panel-report') initReportDates();
+            });
+        });
+
+        // Зоны
+        document.querySelectorAll('.zone').forEach(zone => {
+            zone.addEventListener('click', () => {
+                document.querySelectorAll('.zone').forEach(z => z.classList.remove('active'));
+                zone.classList.add('active');
+                selectedZone = zone.dataset.zone;
+            });
+        });
+
+        function setupRow(id, attr, key) {
+            const c = document.getElementById(id);
+            if (!c) return;
+            c.querySelectorAll('[data-' + attr + ']').forEach(b => {
+                b.addEventListener('click', () => {
+                    c.querySelectorAll('.btn, .int-btn').forEach(x => x.classList.remove('selected'));
+                    b.classList.add('selected');
+                    if (key === 'selectedType') {
+                        selectedType = b.dataset[attr];
+                        document.getElementById('pain-char-row').style.display = selectedType === 'Боль' ? 'block' : 'none';
+                        if (selectedType !== 'Боль') { selectedPainChar = null; document.querySelectorAll('#pain-char-buttons .btn').forEach(x => x.classList.remove('selected')); }
+                    } else if (key === 'selectedPainChar') selectedPainChar = b.dataset[attr];
+                    else if (key === 'selectedIntensity') selectedIntensity = parseInt(b.dataset[attr]);
+                });
+            });
+        }
+        setupRow('type-buttons', 'type', 'selectedType');
+        setupRow('pain-char-buttons', 'pain-char', 'selectedPainChar');
+        setupRow('intensity-buttons', 'intensity', 'selectedIntensity');
+
+        // Сохранение
+        document.getElementById('save-btn').addEventListener('click', () => {
+            if (!selectedZone) return alert('Выберите зону');
+            if (!selectedType) return alert('Выберите тип');
+            if (!selectedIntensity) return alert('Выберите интенсивность');
+            const record = { id: Date.now(), dateTime: new Date().toISOString(), zone: selectedZone, type: selectedType, painChar: selectedType === 'Боль' ? selectedPainChar : null, intensity: selectedIntensity, note: document.getElementById('note').value, context: { food: '', sleep: '', activity: '', weather: '' } };
+            const h = JSON.parse(localStorage.getItem('symptomHistory') || '[]');
+            h.unshift(record);
+            localStorage.setItem('symptomHistory', JSON.stringify(h));
+            const msg = document.getElementById('saved-msg');
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 1500);
+            selectedZone = null; selectedType = null; selectedPainChar = null; selectedIntensity = null;
+            document.querySelectorAll('.zone,.btn,.int-btn').forEach(x => x.classList.remove('active','selected'));
+            document.getElementById('pain-char-row').style.display = 'none';
+            document.getElementById('note').value = '';
+        });
+
+        function renderHistory() {
+            const h = JSON.parse(localStorage.getItem('symptomHistory') || '[]');
+            const list = document.getElementById('history-list');
+            if (!h.length) { list.innerHTML = '<div class="empty-history">Нет записей</div>'; return; }
+            list.innerHTML = h.map(r => {
+                const d = new Date(r.dateTime);
+                const ds = d.toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                const ic = r.intensity >= 7 ? 'high' : (r.intensity >= 4 ? 'mid' : 'low');
+                const hc = r.context && (r.context.food || r.context.sleep || r.context.activity);
+                return `<div class="history-item" data-id="${r.id}"><div class="left"><span class="zone-name">${r.zone} ${hc ? '<span class="context-indicator"></span>' : ''}</span><span class="type-name">${r.type}${r.painChar ? ', ' + r.painChar.toLowerCase() : ''}</span><span class="date-name">${ds}</span></div><div class="right"><span class="intensity-badge ${ic}">${r.intensity}/10</span><button class="delete-btn" data-delete-id="${r.id}">✕</button></div></div>`;
+            }).join('');
+            list.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', e => { if (!e.target.classList.contains('delete-btn')) openModal(parseInt(item.dataset.id)); });
+            });
+            list.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', e => { e.stopPropagation(); deleteRec(parseInt(btn.dataset.deleteId)); });
+            });
+        }
+
+        function deleteRec(id) {
+            if (!confirm('Удалить?')) return;
+            let h = JSON.parse(localStorage.getItem('symptomHistory') || '[]');
+            h = h.filter(r => r.id !== id);
+            localStorage.setItem('symptomHistory', JSON.stringify(h));
+            renderHistory();
+        }
+
+        function openModal(id) {
+            const h = JSON.parse(localStorage.getItem('symptomHistory') || '[]');
+            const r = h.find(x => x.id === id);
+            if (!r) return;
+            currentEditId = id;
+            const d = new Date(r.dateTime);
+            const ctx = r.context || { food: '', sleep: '', activity: '', weather: '' };
+            document.getElementById('modal-content').innerHTML = `
+                <p style="color:var(--text-secondary);font-size:12px;margin-bottom:10px;">${d.toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })} — <b>${r.zone}</b>, ${r.type}${r.painChar ? ' (' + r.painChar.toLowerCase() + ')' : ''}, <b>${r.intensity}/10</b></p>
+                <div class="field"><label>Еда за час до</label><input id="ctx-food" value="${ctx.food||''}" placeholder="кофе, ничего"></div>
+                <div class="field"><label>Сон (часов)</label><input id="ctx-sleep" value="${ctx.sleep||''}" placeholder="6"></div>
+                <div class="field"><label>Действие</label><input id="ctx-activity" value="${ctx.activity||''}" placeholder="сидел, шёл"></div>
+                <div class="field"><label>Погода</label><input id="ctx-weather" value="${ctx.weather||''}" placeholder="дождь"></div>
+            `;
+            document.getElementById('modal-overlay').classList.add('open');
+        }
+
+        function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); currentEditId = null; }
+        document.getElementById('btn-close-modal').addEventListener('click', closeModal);
+        document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === document.getElementById('modal-overlay')) closeModal(); });
+        document.getElementById('btn-save-context').addEventListener('click', () => {
+            if (!currentEditId) return;
+            const h = JSON.parse(localStorage.getItem('symptomHistory') || '[]');
+            const r = h.find(x => x.id === currentEditId);
+            if (!r) return;
+            r.context = { food: document.getElementById('ctx-food').value, sleep: document.getElementById('ctx-sleep').value, activity: document.getElementById('ctx-activity').value, weather: document.getElementById('ctx-weather').value };
+            localStorage.setItem('symptomHistory', JSON.stringify(h));
+            closeModal();
+            renderHistory();
+        });
+
+        function initReportDates() {
+            const now = new Date();
+            const weekAgo = new Date(now.getTime() - 7*24*60*60*1000);
+            document.getElementById('report-date-from').value = weekAgo.toISOString().split('T')[0];
+            document.getElementById('report-date-to').value = now.toISOString().split('T')[0];
+        }
+
+        document.getElementById('generate-report').addEventListener('click', () => {
+            const from = new Date(document.getElementById('report-date-from').value);
+            const to = new Date(document.getElementById('report-date-to').value + 'T23:59:59');
+            if (isNaN(from) || isNaN(to)) return alert('Выберите даты');
+            if (from > to) return alert('Дата «с» позже «по»');
+            const h = JSON.parse(localStorage.getItem('symptomHistory') || '[]');
+            const f = h.filter(r => { const d = new Date(r.dateTime); return d >= from && d <= to; });
+            if (!f.length) { document.getElementById('report-output').textContent = 'Нет записей за период.'; return; }
+            const bz = {}, bt = {}; let si = 0;
+            f.forEach(r => { bz[r.zone] = (bz[r.zone]||0)+1; const tk = r.type + (r.painChar?' ('+r.painChar.toLowerCase()+')':''); bt[tk] = (bt[tk]||0)+1; si += r.intensity; });
+            const ai = (si/f.length).toFixed(1);
+            const tz = Object.entries(bz).sort((a,b) => b[1]-a[1])[0];
+            const tt = Object.entries(bt).sort((a,b) => b[1]-a[1])[0];
+            let rep = `ДНЕВНИК СИМПТОМОВ\n${'═'.repeat(30)}\nПериод: ${from.toLocaleDateString('ru-RU')} — ${to.toLocaleDateString('ru-RU')}\nЭпизодов: ${f.length}\nСр. интенсивность: ${ai}/10\nЧастая зона: ${tz[0]} (${tz[1]} раз)\nЧастый тип: ${tt[0]} (${tt[1]} раз)\n${'─'.repeat(30)}\n`;
+            f.sort((a,b) => new Date(a.dateTime)-new Date(b.dateTime)).forEach((r,i) => {
+                const d = new Date(r.dateTime);
+                rep += `\n${i+1}. ${d.toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}\n   ${r.zone}, ${r.type}${r.painChar?' ('+r.painChar.toLowerCase()+')':''}, ${r.intensity}/10\n`;
+                if (r.context) { if (r.context.food) rep += `   Еда: ${r.context.food}\n`; if (r.context.sleep) rep += `   Сон: ${r.context.sleep} ч\n`; if (r.context.activity) rep += `   Действие: ${r.context.activity}\n`; if (r.context.weather) rep += `   Погода: ${r.context.weather}\n`; }
+                if (r.note) rep += `   Заметка: ${r.note}\n`;
+            });
+            document.getElementById('report-output').textContent = rep;
+        });
+
+        document.getElementById('copy-report').addEventListener('click', () => {
+            const t = document.getElementById('report-output').textContent;
+            if (t.startsWith('Выберите')) return;
+            navigator.clipboard.writeText(t).then(() => { const b = document.getElementById('copy-report'); b.textContent = '✅ Скопировано!'; setTimeout(() => b.textContent = '📋 Скопировать', 1500); });
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const sw = new Blob(["self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>self.clients.claim());self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});"], {type:'application/javascript'});
+                navigator.serviceWorker.register(URL.createObjectURL(sw)).catch(()=>{});
+            });
+        }
+        renderHistory();
+    </script>
+</body>
+</html>
