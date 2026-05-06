@@ -2,6 +2,7 @@
     --bg: #f0f4f8;
     --card: #fff;
     --primary: #2563eb;
+    --primary-dark: #1d4ed8;
     --danger: #e65050;
     --warning: #e5980b;
     --success: #10b981;
@@ -9,10 +10,163 @@
     --text-secondary: #64748b;
     --text-muted: #94a3b8;
     --border: #e2e8f0;
+    --shadow: 0 4px 16px rgba(0,0,0,0.06);
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 12px);
 }
 
+/* ===== ТЁМНАЯ ТЕМА ===== */
+body.dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --text: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border: #334155;
+    --shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+/* Силуэт в тёмной теме */
+body.dark .zone {
+    fill: #1e293b;
+    stroke: #475569;
+}
+
+/* Кнопки в тёмной теме — невыбранные */
+body.dark .btn,
+body.dark .int-btn {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+/* Кнопки в тёмной теме — ВЫБРАННЫЕ */
+body.dark .btn.selected {
+    background: #3b82f6;
+    border-color: #60a5fa;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+body.dark .int-btn.selected {
+    background: #3b82f6;
+    border-color: #60a5fa;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* Кнопки интенсивности 7-10 в тёмной теме */
+body.dark .int-btn.high-light {
+    background: #3b1a1a;
+    border-color: #5c1a1a;
+    color: #f87171;
+}
+
+body.dark .int-btn.high-light.selected {
+    background: #dc2626;
+    border-color: #f87171;
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.4);
+}
+
+/* Бейджи интенсивности в тёмной теме */
+body.dark .intensity-badge.high {
+    background: #3b1a1a;
+    color: #f87171;
+}
+
+body.dark .intensity-badge.mid {
+    background: #3b2e1a;
+    color: #fbbf24;
+}
+
+body.dark .intensity-badge.low {
+    background: #1a2e3b;
+    color: #60a5fa;
+}
+
+/* Поля ввода в тёмной теме */
+body.dark .note-input,
+body.dark .report-row input,
+body.dark .modal input {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+body.dark .note-input::placeholder,
+body.dark .modal input::placeholder {
+    color: #64748b;
+}
+
+/* Карточки и модалки */
+body.dark .welcome-card,
+body.dark .modal {
+    background: var(--card);
+}
+
+body.dark .report-output {
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Табы в тёмной теме */
+body.dark .tabs {
+    background: var(--card);
+}
+
+body.dark .tab {
+    color: var(--text-secondary);
+}
+
+body.dark .tab.active {
+    background: #3b82f6;
+    color: #fff;
+}
+
+/* Кнопки действий в тёмной теме */
+body.dark .copy-btn {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+body.dark .copy-btn:active {
+    background: #334155;
+}
+
+body.dark .btn-close-modal {
+    background: var(--bg);
+    color: var(--text-secondary);
+    border-color: var(--border);
+}
+
+body.dark .btn-save-context {
+    background: #3b82f6;
+    color: #fff;
+}
+
+/* Кнопка "Назад" */
+body.dark .back-btn:active {
+    background: #334155;
+}
+
+body.dark .theme-switch:active,
+body.dark .theme-switch-sm:active,
+body.dark .lang-switch:active {
+    background: #334155;
+}
+
+/* welcome-кнопки */
+body.dark .welcome-btn.secondary {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+/* ===== БАЗОВЫЕ СТИЛИ ===== */
 * {
     margin: 0;
     padding: 0;
@@ -26,26 +180,216 @@ body {
     margin: 0 auto;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    user-select: none;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ===== ПРИВЕТСТВЕННЫЙ ЭКРАН ===== */
+.welcome-screen {
+    padding: calc(20px + var(--safe-top)) 20px calc(30px + var(--safe-bottom));
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-content {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.welcome-icon {
+    font-size: 64px;
+    margin-bottom: 8px;
+}
+
+.welcome-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.welcome-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+.welcome-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 24px 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.welcome-greeting {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.welcome-date {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.welcome-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.welcome-motivation {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.welcome-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.welcome-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.welcome-btn:active {
+    transform: scale(0.97);
+}
+
+.welcome-btn.primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.welcome-btn.secondary {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.welcome-footer {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.lang-switch,
+.theme-switch {
+    background: none;
+    border: none;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.lang-switch:active,
+.theme-switch:active {
+    background: var(--border);
+}
+
+.version {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ===== ОСНОВНОЕ ПРИЛОЖЕНИЕ ===== */
+.app-screen {
     padding: 8px 12px;
     padding-top: calc(8px + var(--safe-top));
     padding-bottom: calc(16px + var(--safe-bottom));
     min-height: 100vh;
-    user-select: none;
 }
 
-/* Шапка */
+.back-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.back-btn:active {
+    background: var(--border);
+}
+
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 8px;
+    gap: 8px;
 }
+
 .header h1 {
     font-size: 18px;
     font-weight: 700;
     letter-spacing: -0.2px;
     white-space: nowrap;
+    flex: 1;
 }
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.theme-switch-sm {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 6px;
+}
+
+.theme-switch-sm:active {
+    background: var(--border);
+}
+
 .header .date-badge {
     font-size: 11px;
     color: var(--text-secondary);
@@ -68,6 +412,7 @@ body {
     top: calc(4px + var(--safe-top));
     z-index: 10;
 }
+
 .tab {
     flex: 1;
     text-align: center;
@@ -80,6 +425,7 @@ body {
     transition: all 0.15s;
     white-space: nowrap;
 }
+
 .tab.active {
     background: var(--primary);
     color: #fff;
@@ -88,6 +434,7 @@ body {
 .panel {
     display: none;
 }
+
 .panel.active {
     display: block;
 }
@@ -98,16 +445,21 @@ body {
     justify-content: center;
     margin: 0 0 4px;
 }
+
 svg {
-    width: 130px;
+    width: 200px;
     height: auto;
+    margin: 0 auto;
 }
+
 .zone {
     fill: #e8ecf1;
     stroke: #c8cdd5;
     stroke-width: 1.6;
     cursor: pointer;
+    transition: fill 0.15s;
 }
+
 .zone.active {
     fill: var(--danger);
     stroke: #c53030;
@@ -127,6 +479,7 @@ svg {
     flex-wrap: wrap;
     gap: 4px;
 }
+
 .btn {
     padding: 6px 9px;
     border: 1px solid var(--border);
@@ -136,20 +489,25 @@ svg {
     font-size: 11px;
     font-weight: 500;
     cursor: pointer;
+    transition: all 0.15s;
 }
+
 .btn:active {
     transform: scale(0.96);
 }
+
 .btn.selected {
     background: var(--primary);
     border-color: var(--primary);
     color: #fff;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
 .intensity-row {
     display: flex;
     gap: 2px;
 }
+
 .int-btn {
     flex: 1;
     padding: 8px 0;
@@ -161,21 +519,27 @@ svg {
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
+    transition: all 0.15s;
 }
+
 .int-btn.selected {
     background: var(--primary);
     border-color: var(--primary);
     color: #fff;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
+
 .int-btn.high-light {
     border-color: #fecaca;
     background: #fff5f5;
     color: var(--danger);
 }
+
 .int-btn.high-light.selected {
     background: var(--danger);
     border-color: var(--danger);
     color: #fff;
+    box-shadow: 0 0 0 2px rgba(230, 80, 80, 0.3);
 }
 
 .note-input {
@@ -192,6 +556,10 @@ svg {
     font-family: inherit;
 }
 
+.note-input::placeholder {
+    color: var(--text-muted);
+}
+
 .save-btn {
     width: 100%;
     padding: 11px;
@@ -203,9 +571,12 @@ svg {
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
+    transition: all 0.15s;
 }
+
 .save-btn:active {
     opacity: 0.9;
+    transform: scale(0.97);
 }
 
 .saved-msg {
@@ -217,6 +588,7 @@ svg {
     opacity: 0;
     transition: opacity 0.2s;
 }
+
 .saved-msg.show {
     opacity: 1;
 }
@@ -233,6 +605,7 @@ svg {
     justify-content: space-between;
     align-items: center;
 }
+
 .history-item .left {
     display: flex;
     flex-direction: column;
@@ -240,42 +613,51 @@ svg {
     flex: 1;
     min-width: 0;
 }
+
 .history-item .zone-name {
     font-weight: 600;
     font-size: 13px;
 }
+
 .history-item .type-name {
     font-size: 11px;
     color: var(--text-secondary);
 }
+
 .history-item .date-name {
     font-size: 10px;
     color: var(--text-muted);
 }
+
 .history-item .right {
     display: flex;
     align-items: center;
     gap: 4px;
     flex-shrink: 0;
 }
+
 .intensity-badge {
     border-radius: 5px;
     padding: 3px 6px;
     font-weight: 700;
     font-size: 11px;
 }
+
 .intensity-badge.high {
     background: #fef2f2;
     color: var(--danger);
 }
+
 .intensity-badge.mid {
     background: #fffbeb;
     color: var(--warning);
 }
+
 .intensity-badge.low {
     background: #eff4ff;
     color: var(--primary);
 }
+
 .delete-btn {
     background: none;
     border: none;
@@ -284,6 +666,7 @@ svg {
     cursor: pointer;
     padding: 2px 6px;
 }
+
 .empty-history {
     text-align: center;
     color: var(--text-muted);
@@ -297,12 +680,14 @@ svg {
     border-radius: 10px;
     padding: 12px;
 }
+
 .report-row {
     display: flex;
     gap: 4px;
     align-items: center;
     margin-bottom: 8px;
 }
+
 .report-row input {
     flex: 1;
     padding: 7px 4px;
@@ -314,10 +699,13 @@ svg {
     font-family: inherit;
     min-width: 0;
 }
+
 .report-row span {
     font-size: 11px;
     flex-shrink: 0;
+    color: var(--text-muted);
 }
+
 .report-btn {
     padding: 7px 10px;
     background: var(--primary);
@@ -330,6 +718,7 @@ svg {
     white-space: nowrap;
     flex-shrink: 0;
 }
+
 .report-output {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -338,14 +727,20 @@ svg {
     font-size: 10px;
     line-height: 1.5;
     white-space: pre-wrap;
-    max-height: 40vh;
+    max-height: 50vh;
     overflow-y: auto;
     font-family: 'SF Mono', monospace;
 }
-.copy-btn {
-    width: 100%;
-    padding: 10px;
+
+.report-actions {
+    display: flex;
+    gap: 6px;
     margin-top: 6px;
+}
+
+.copy-btn {
+    flex: 1;
+    padding: 10px;
     background: var(--card);
     border: 1px solid var(--border);
     color: var(--text);
@@ -353,6 +748,11 @@ svg {
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.15s;
+}
+
+.copy-btn:active {
+    background: var(--bg);
 }
 
 /* Модалка */
@@ -367,9 +767,11 @@ svg {
     justify-content: center;
     align-items: flex-end;
 }
+
 .modal-overlay.open {
     display: flex;
 }
+
 .modal {
     background: var(--card);
     border-radius: 18px 18px 0 0;
@@ -379,19 +781,23 @@ svg {
     max-height: 75vh;
     overflow-y: auto;
 }
+
 .modal h3 {
     font-size: 15px;
     margin-bottom: 10px;
 }
+
 .modal .field {
     margin-bottom: 8px;
 }
+
 .modal label {
     font-size: 10px;
     color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
 }
+
 .modal input {
     width: 100%;
     padding: 8px;
@@ -400,12 +806,15 @@ svg {
     border-radius: 6px;
     font-size: 13px;
     margin-top: 2px;
+    color: var(--text);
 }
+
 .modal .btn-row {
     display: flex;
     gap: 6px;
     margin-top: 12px;
 }
+
 .modal .btn-save-context,
 .modal .btn-close-modal {
     flex: 1;
@@ -415,13 +824,29 @@ svg {
     font-size: 13px;
     cursor: pointer;
 }
+
 .modal .btn-save-context {
     background: var(--primary);
     border: none;
     color: #fff;
 }
+
 .modal .btn-close-modal {
     background: var(--bg);
     border: 1px solid var(--border);
     color: var(--text-secondary);
+}
+
+@media (max-width: 380px) {
+    svg {
+        width: 170px;
+    }
+    .btn {
+        padding: 5px 7px;
+        font-size: 10px;
+    }
+    .int-btn {
+        font-size: 10px;
+        padding: 6px 0;
+    }
 }
