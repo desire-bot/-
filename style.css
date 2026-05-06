@@ -1,0 +1,427 @@
+:root {
+    --bg: #f0f4f8;
+    --card: #fff;
+    --primary: #2563eb;
+    --danger: #e65050;
+    --warning: #e5980b;
+    --success: #10b981;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 12px);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0 auto;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    padding: 8px 12px;
+    padding-top: calc(8px + var(--safe-top));
+    padding-bottom: calc(16px + var(--safe-bottom));
+    min-height: 100vh;
+    user-select: none;
+}
+
+/* Шапка */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+}
+.header .date-badge {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--card);
+    padding: 4px 8px;
+    border-radius: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Табы */
+.tabs {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 8px;
+    background: var(--card);
+    border-radius: 10px;
+    padding: 3px;
+    position: sticky;
+    top: calc(4px + var(--safe-top));
+    z-index: 10;
+}
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.tab.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.panel {
+    display: none;
+}
+.panel.active {
+    display: block;
+}
+
+/* Силуэт */
+.silhouette-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 4px;
+}
+svg {
+    width: 130px;
+    height: auto;
+}
+.zone {
+    fill: #e8ecf1;
+    stroke: #c8cdd5;
+    stroke-width: 1.6;
+    cursor: pointer;
+}
+.zone.active {
+    fill: var(--danger);
+    stroke: #c53030;
+}
+
+.section-title {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin: 6px 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+}
+
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.btn {
+    padding: 6px 9px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.btn:active {
+    transform: scale(0.96);
+}
+.btn.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.intensity-row {
+    display: flex;
+    gap: 2px;
+}
+.int-btn {
+    flex: 1;
+    padding: 8px 0;
+    text-align: center;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.int-btn.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+.int-btn.high-light {
+    border-color: #fecaca;
+    background: #fff5f5;
+    color: var(--danger);
+}
+.int-btn.high-light.selected {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
+
+.note-input {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 12px;
+    margin-top: 4px;
+    resize: none;
+    height: 34px;
+    font-family: inherit;
+}
+
+.save-btn {
+    width: 100%;
+    padding: 11px;
+    margin-top: 8px;
+    background: var(--primary);
+    border: none;
+    color: #fff;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.save-btn:active {
+    opacity: 0.9;
+}
+
+.saved-msg {
+    text-align: center;
+    color: var(--success);
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.saved-msg.show {
+    opacity: 1;
+}
+
+/* История */
+.history-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.history-item .left {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+.history-item .zone-name {
+    font-weight: 600;
+    font-size: 13px;
+}
+.history-item .type-name {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+.history-item .date-name {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+.history-item .right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.intensity-badge {
+    border-radius: 5px;
+    padding: 3px 6px;
+    font-weight: 700;
+    font-size: 11px;
+}
+.intensity-badge.high {
+    background: #fef2f2;
+    color: var(--danger);
+}
+.intensity-badge.mid {
+    background: #fffbeb;
+    color: var(--warning);
+}
+.intensity-badge.low {
+    background: #eff4ff;
+    color: var(--primary);
+}
+.delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 15px;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+.empty-history {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 24px;
+}
+
+/* Отчёт */
+.card {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 12px;
+}
+.report-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.report-row input {
+    flex: 1;
+    padding: 7px 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 10px;
+    font-family: inherit;
+    min-width: 0;
+}
+.report-row span {
+    font-size: 11px;
+    flex-shrink: 0;
+}
+.report-btn {
+    padding: 7px 10px;
+    background: var(--primary);
+    border: none;
+    color: #fff;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.report-output {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 10px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    max-height: 40vh;
+    overflow-y: auto;
+    font-family: 'SF Mono', monospace;
+}
+.copy-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Модалка */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.45);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 100;
+    justify-content: center;
+    align-items: flex-end;
+}
+.modal-overlay.open {
+    display: flex;
+}
+.modal {
+    background: var(--card);
+    border-radius: 18px 18px 0 0;
+    padding: 16px 14px;
+    padding-bottom: calc(20px + var(--safe-bottom));
+    width: 100%;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+.modal h3 {
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+.modal .field {
+    margin-bottom: 8px;
+}
+.modal label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.modal input {
+    width: 100%;
+    padding: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 2px;
+}
+.modal .btn-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+}
+.modal .btn-save-context,
+.modal .btn-close-modal {
+    flex: 1;
+    padding: 10px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+.modal .btn-save-context {
+    background: var(--primary);
+    border: none;
+    color: #fff;
+}
+.modal .btn-close-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
